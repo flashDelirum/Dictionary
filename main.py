@@ -9,9 +9,9 @@ app_id = 'c12e32d2'
 app_key = 'bb73cf8adadb2d0b1704ca43c2782fe0'
 
 language = 'en'
-word_id = 'Ace'
 
-class Example(QMainWindow):
+
+class Dictionary(QMainWindow):
 
     def __init__(self):
         super().__init__()
@@ -65,5 +65,5 @@ class Example(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = Example()
+    Dictionary = Dictionary()
     sys.exit(app.exec_())
