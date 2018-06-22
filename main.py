@@ -1,14 +1,14 @@
 import json
 import requests
-import random
 import sys
 from PyQt5.QtWidgets import (QMainWindow, QApplication, QWidget, QVBoxLayout, QLabel,
                              QDesktopWidget, QLineEdit)
 from PyQt5.QtGui import QIcon, QFont
+from PyQt5.QtCore import Qt
 
+# API info
 app_id = 'c12e32d2'
 app_key = 'bb73cf8adadb2d0b1704ca43c2782fe0'
-
 language = 'en'
 
 
@@ -58,6 +58,7 @@ class Dictionary(QMainWindow):
 
             # Label
             temp = QLabel()
+            temp.setTextInteractionFlags(Qt.TextSelectableByMouse)  # Enables text select
             font = QFont('PT Sans', 11)  # label font
             temp.setFont(font)
             self.display_labels.append(temp)
@@ -67,8 +68,24 @@ class Dictionary(QMainWindow):
             self.vbox.addWidget(self.display_labels[x])
 
     def on_returnPressed(self):
+
+        word_id = self.sender().text()
         index = self.sender().index
-        self.display_labels[index].setText(str(random.randint(1, 100))) # Event tester
+
+        url = 'https://od-api.oxforddictionaries.com:443/api/v1/entries/' + language + '/' + word_id.lower()
+        r = requests.get(url, headers={'app_id': app_id, 'app_key': app_key})
+
+        # Handles definition not found
+        if r.status_code == 404:
+            self.display_labels[index].setText("Definition not found.")
+            return
+
+        json_data = json.dumps(r.json())
+        self.display_labels[index].setText(self.json_definition(json_data))
+
+    def json_definition(self, json_data):
+        return json_data
+
 
     # Centers window
     def center(self):
