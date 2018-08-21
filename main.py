@@ -72,6 +72,7 @@ class Dictionary(QMainWindow):
         word_id = self.sender().text()
         index = self.sender().index
 
+        # requests word
         url = 'https://od-api.oxforddictionaries.com:443/api/v1/entries/' + language + '/' + word_id.lower()
         r = requests.get(url, headers={'app_id': app_id, 'app_key': app_key})
 
@@ -80,11 +81,16 @@ class Dictionary(QMainWindow):
             self.display_labels[index].setText("Definition not found.")
             return
 
-        json_data = json.dumps(r.json())
+        json_data = r.json()
         self.display_labels[index].setText(self.json_definition(json_data))
 
     def json_definition(self, json_data):
-        return json_data
+        try:
+            definition = json_data['results'][0]['lexicalEntries'][0]['entries'][0]['senses'][0]['definitions'][0]
+        except Exception as e:
+            definition = json_data['results'][0]['lexicalEntries'][0]['entries'][0]['senses'][0]['crossReferenceMarkers'][0]
+
+        return definition
 
 
     # Centers window
